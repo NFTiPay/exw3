@@ -45,8 +45,8 @@ defmodule ExW3.Rpc do
 
   @doc "Returns transaction receipt for specified transaction hash(id)"
   @spec tx_receipt(binary()) :: {:ok, map()} | {:error, any()}
-  def tx_receipt(tx_hash) do
-    case call_client(:eth_get_transaction_receipt, [tx_hash]) do
+  def tx_receipt(tx_hash, opts \\ []) do
+    case call_client(:eth_get_transaction_receipt, [tx_hash, opts]) do
       {:ok, nil} ->
         {:error, :not_mined}
 
