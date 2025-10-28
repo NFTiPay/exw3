@@ -8,7 +8,7 @@ defmodule ExW3.Client do
   def call_client(method_name, arguments \\ []) do
     url_opt = extract_url_opt(arguments)
 
-    if url_opt is not nil do
+    if not is_nil(url_opt) do
       require IEx
       IEx.pry
     end
