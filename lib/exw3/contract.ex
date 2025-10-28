@@ -39,7 +39,7 @@ defmodule ExW3.Contract do
 
   @doc "Use a Contract's method with an eth_call"
   @spec call(atom(), atom(), list(), any()) :: {:ok, any()}
-  def call(contract_name, method_name, args \\ [], timeout \\ :infinity) do
+  def call(contract_name, method_name, args \\ [], opts \\ [], timeout \\ :infinity) do
     GenServer.call(ContractManager, {:call, {contract_name, method_name, args}}, timeout)
   end
 
@@ -200,18 +200,20 @@ defmodule ExW3.Contract do
     {tx_receipt["contractAddress"], tx_hash}
   end
 
-  def eth_call_helper(address, abi, method_name, args) do
-    result =
-      ExW3.Rpc.eth_call([
-        %{
-          to: address,
-          data: "0x#{ExW3.Abi.encode_method_call(abi, method_name, args)}"
-        }
-      ])
+  def eth_call_helper(address, abi, method_name, args, opts \\ []) do
+    call_data = %{
+      to: address,
+      data: "0x" <> ExW3.Abi.encode_method_call(abi, method_name, args)
+    }
 
-    case result do
+    case Keyword.get(opts, :url) do
+      nil -> ExW3.Rpc.eth_call([call_data])
+      url -> ExW3.Rpc.eth_call([call_data], url: url)
+    end
+    |> case do
       {:ok, data} ->
-        ([:ok] ++ ExW3.Abi.decode_output(abi, method_name, data)) |> List.to_tuple()
+        ([:ok] ++ ExW3.Abi.decode_output(abi, method_name, data))
+        |> List.to_tuple()
 
       {:error, err} ->
         {:error, err}
@@ -473,11 +475,11 @@ defmodule ExW3.Contract do
     {:reply, state[name][:address], state}
   end
 
-  def handle_call({:call, {contract_name, method_name, args}}, _from, state) do
+  def handle_call({:call, {contract_name, method_name, args, opts}}, _from, state) do
     contract_info = state[contract_name]
 
     with {:ok, address} <- check_option(contract_info[:address], :missing_address) do
-      result = eth_call_helper(address, contract_info[:abi], Atom.to_string(method_name), args)
+      result = eth_call_helper(address, contract_info[:abi], Atom.to_string(method_name), args, opts)
       {:reply, result, state}
     else
       err -> {:reply, err, state}
