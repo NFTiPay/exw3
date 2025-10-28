@@ -8,6 +8,9 @@ defmodule ExW3.Client do
   def call_client(method_name, arguments \\ []) do
     url_opt = extract_url_opt(arguments)
 
+    require IEx
+    IEx.pry
+
     case client_type(url_opt) do
       :http -> apply(Ethereumex.HttpClient, method_name, arguments)
       :ipc -> apply(Ethereumex.IpcClient, method_name, arguments)

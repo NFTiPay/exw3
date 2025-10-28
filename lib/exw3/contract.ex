@@ -201,9 +201,6 @@ defmodule ExW3.Contract do
   end
 
   def eth_call_helper(address, abi, method_name, args, opts) do
-    require IEx
-    IEx.pry
-
     result =
       ExW3.Rpc.eth_call([
         %{
