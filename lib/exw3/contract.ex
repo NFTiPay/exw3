@@ -505,10 +505,10 @@ defmodule ExW3.Contract do
     end
   end
 
-  def handle_call({:tx_receipt, {contract_name, tx_hash}}, _from, state) do
+  def handle_call({:tx_receipt, {contract_name, tx_hash, options}}, _from, state) do
     contract_info = state[contract_name]
 
-    case ExW3.tx_receipt(tx_hash) do
+    case ExW3.tx_receipt(tx_hash, options) do
       {:ok, receipt} ->
         events = contract_info[:events]
         logs = receipt["logs"]
