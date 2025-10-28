@@ -174,7 +174,7 @@ defmodule ExW3.Rpc do
   @doc "Simple eth_call to client. Recommended to use ExW3.Contract.call instead."
   @spec eth_call(list()) :: any()
   def eth_call(arguments, opts \\ []) do
-    call_client(:eth_call, [arguments, opts])
+    call_client(:eth_call, arguments ++ [opts])
   end
 
   @doc "Simple eth_send_transaction. Recommended to use ExW3.Contract.send instead."
