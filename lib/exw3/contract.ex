@@ -40,7 +40,7 @@ defmodule ExW3.Contract do
   @doc "Use a Contract's method with an eth_call"
   @spec call(atom(), atom(), list(), any()) :: {:ok, any()}
   def call(contract_name, method_name, args \\ [], opts \\ [], timeout \\ :infinity) do
-    GenServer.call(ContractManager, {:call, {contract_name, method_name, args}}, timeout)
+    GenServer.call(ContractManager, {:call, {contract_name, method_name, args, opts}}, timeout)
   end
 
   @doc "Use a Contract's method with an eth_sendTransaction"
