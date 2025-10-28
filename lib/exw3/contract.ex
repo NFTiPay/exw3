@@ -202,14 +202,7 @@ defmodule ExW3.Contract do
 
   def eth_call_helper(address, abi, method_name, args, opts) do
     result =
-      # ExW3.Rpc.eth_call([
-      #   %{
-      #     to: address,
-      #     data: "0x#{ExW3.Abi.encode_method_call(abi, method_name, args)}"
-      #   },
-      #   opts
-      # ])
-      ExW3.Client.call_client(:eth_call, [
+      ExW3.Rpc.eth_call([
         %{
           to: address,
           data: "0x#{ExW3.Abi.encode_method_call(abi, method_name, args)}"
@@ -217,9 +210,6 @@ defmodule ExW3.Contract do
         "latest",
         opts
       ])
-
-    require IEx
-    IEx.pry
 
     case result do
       {:ok, data} ->
