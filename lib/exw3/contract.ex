@@ -473,11 +473,11 @@ defmodule ExW3.Contract do
     {:reply, state[name][:address], state}
   end
 
-  def handle_call({:call, {contract_name, method_name, args}}, _from, state) do
+  def handle_call({:call, {contract_name, method_name, args, options}}, _from, state) do
     contract_info = state[contract_name]
 
     with {:ok, address} <- check_option(contract_info[:address], :missing_address) do
-      result = eth_call_helper(address, contract_info[:abi], Atom.to_string(method_name), args)
+      result = eth_call_helper(address, contract_info[:abi], Atom.to_string(method_name), args, options)
       {:reply, result, state}
     else
       err -> {:reply, err, state}
