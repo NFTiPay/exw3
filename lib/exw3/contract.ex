@@ -39,8 +39,8 @@ defmodule ExW3.Contract do
 
   @doc "Use a Contract's method with an eth_call"
   @spec call(atom(), atom(), list(), any()) :: {:ok, any()}
-  def call(contract_name, method_name, args \\ [], timeout \\ :infinity) do
-    GenServer.call(ContractManager, {:call, {contract_name, method_name, args}}, timeout)
+  def call(contract_name, method_name, args \\ [], options \\ [], timeout \\ :infinity) do
+    GenServer.call(ContractManager, {:call, {contract_name, method_name, args, options}}, timeout)
   end
 
   @doc "Use a Contract's method with an eth_sendTransaction"
@@ -51,8 +51,8 @@ defmodule ExW3.Contract do
 
   @doc "Returns a formatted transaction receipt for the given transaction hash(id)"
   @spec tx_receipt(atom(), binary()) :: map()
-  def tx_receipt(contract_name, tx_hash) do
-    GenServer.call(ContractManager, {:tx_receipt, {contract_name, tx_hash}})
+  def tx_receipt(contract_name, tx_hash, options \\ []) do
+    GenServer.call(ContractManager, {:tx_receipt, {contract_name, tx_hash, options}})
   end
 
   @doc "Installs a filter on the Ethereum node. This also formats the parameters, and saves relevant information to format event logs."
