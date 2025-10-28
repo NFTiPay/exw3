@@ -200,24 +200,16 @@ defmodule ExW3.Contract do
     {tx_receipt["contractAddress"], tx_hash}
   end
 
-  def eth_call_helper(address, abi, method_name, args, opts \\ []) do
-    call_data = %{
-      to: address,
-      data: "0x" <> ExW3.Abi.encode_method_call(abi, method_name, args)
-    }
-
-    case Keyword.get(opts, :url) do
-      nil -> ExW3.Rpc.eth_call([call_data])
-      url -> ExW3.Rpc.eth_call([call_data], url: url)
-    end
-    |> case do
-      {:ok, data} ->
-        ([:ok] ++ ExW3.Abi.decode_output(abi, method_name, data))
-        |> List.to_tuple()
-
-      {:error, err} ->
-        {:error, err}
-    end
+  def eth_call_helper(address, abi, method_name, args, options) do
+    ExW3.Rpc.eth_call([
+      Map.merge(
+        %{
+          to: address,
+          data: "0x#{ExW3.Abi.encode_method_call(abi, method_name, args)}"
+        },
+        options
+      )
+    ])
   end
 
   def eth_send_helper(address, abi, method_name, args, options) do
