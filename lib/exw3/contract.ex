@@ -40,7 +40,7 @@ defmodule ExW3.Contract do
   @doc "Use a Contract's method with an eth_call"
   @spec call(atom(), atom(), list(), any()) :: {:ok, any()}
   def call(contract_name, method_name, args \\ [], opts \\ [], timeout \\ :infinity) do
-    GenServer.call(ContractManager, {:call, {contract_name, method_name, args, opts}}, timeout)
+    GenServer.call(ContractManager, {:call, {contract_name, method_name, args}}, timeout)
   end
 
   @doc "Use a Contract's method with an eth_sendTransaction"
@@ -201,15 +201,24 @@ defmodule ExW3.Contract do
   end
 
   def eth_call_helper(address, abi, method_name, args, options) do
-    ExW3.Rpc.eth_call([
-      Map.merge(
-        %{
-          to: address,
-          data: "0x#{ExW3.Abi.encode_method_call(abi, method_name, args)}"
-        },
+    result =
+      ExW3.Rpc.eth_call(
+        [
+          %{
+            to: address,
+            data: "0x#{ExW3.Abi.encode_method_call(abi, method_name, args)}"
+          }
+        ],
         options
       )
-    ])
+
+    case result do
+      {:ok, data} ->
+        ([:ok] ++ ExW3.Abi.decode_output(abi, method_name, data)) |> List.to_tuple()
+
+      {:error, err} ->
+        {:error, err}
+    end
   end
 
   def eth_send_helper(address, abi, method_name, args, options) do
