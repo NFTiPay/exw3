@@ -214,6 +214,7 @@ defmodule ExW3.Contract do
           to: address,
           data: "0x#{ExW3.Abi.encode_method_call(abi, method_name, args)}"
         },
+        "latest",
         opts
       ])
 
