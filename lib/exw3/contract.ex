@@ -200,17 +200,18 @@ defmodule ExW3.Contract do
     {tx_receipt["contractAddress"], tx_hash}
   end
 
-  def eth_call_helper(address, abi, method_name, args, options) do
+  def eth_call_helper(address, abi, method_name, args, opts) do
+    require IEx
+    IEx.pry
+
     result =
-      ExW3.Rpc.eth_call(
-        [
-          %{
-            to: address,
-            data: "0x#{ExW3.Abi.encode_method_call(abi, method_name, args)}"
-          }
-        ],
-        options
-      )
+      ExW3.Rpc.eth_call([
+        %{
+          to: address,
+          data: "0x#{ExW3.Abi.encode_method_call(abi, method_name, args)}"
+        },
+        opts
+      ])
 
     case result do
       {:ok, data} ->
