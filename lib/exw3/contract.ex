@@ -51,8 +51,8 @@ defmodule ExW3.Contract do
 
   @doc "Returns a formatted transaction receipt for the given transaction hash(id)"
   @spec tx_receipt(atom(), binary()) :: map()
-  def tx_receipt(contract_name, tx_hash) do
-    GenServer.call(ContractManager, {:tx_receipt, {contract_name, tx_hash}})
+  def tx_receipt(contract_name, tx_hash, opts \\ []) do
+    GenServer.call(ContractManager, {:tx_receipt, {contract_name, tx_hash, opts}})
   end
 
   @doc "Installs a filter on the Ethereum node. This also formats the parameters, and saves relevant information to format event logs."
@@ -507,10 +507,10 @@ defmodule ExW3.Contract do
     end
   end
 
-  def handle_call({:tx_receipt, {contract_name, tx_hash}}, _from, state) do
+  def handle_call({:tx_receipt, {contract_name, tx_hash, opts}}, _from, state) do
     contract_info = state[contract_name]
 
-    case ExW3.tx_receipt(tx_hash) do
+    case ExW3.tx_receipt(tx_hash, opts) do
       {:ok, receipt} ->
         events = contract_info[:events]
         logs = receipt["logs"]
